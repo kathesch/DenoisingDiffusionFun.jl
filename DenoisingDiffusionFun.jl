@@ -154,33 +154,46 @@ model = ConditionalChain(
 
 opt_state = Flux.setup(Adam(0.01), model)
 
-#X = make_spiral(10_000_0)
-#X = make_heart(100)
+X = make_spiral(10_000_0)
+X = make_heart(10_000_0)
 X = sample_face(A, 100000)
 data = Flux.DataLoader(X; batchsize=32, shuffle=true);
 
-for i in 1:10
-    @time for d in data
-        dLdM = gradient(p_losses, model, d)[1]
-        Flux.update!(opt_state, model, dLdM)
-        #p_losses(model, d) |> println
-        #p = p_losses(model, d)
-        #p > 0.4 ? println(p) : break
-    end
+
+@time for d in data
+    dLdM = gradient(p_losses, model, d)[1]
+    Flux.update!(opt_state, model, dLdM)
+    #p_losses(model, d) |> println
+    #p = p_losses(model, d)
+    #p > 0.4 ? println(p) : break
 end
 
-r = range(-5, 5, length=50)
-x = [[i, j] for i in r, j in r] |> x -> reduce(hcat, x)
+
+#r = range(-5, 5, length=50)
+#x = [[i, j] for i in r, j in r] |> x -> reduce(hcat, x)
 x = randn(2, 10000) #.* 2.5
 
-mat_scatter(X)
+#mat_scatter(X)
 #mat_scatter!(x)
 
-@gif for t in [fill(1, 40)..., fill(40, 40)..., 1:40...] |> reverse
-    #for i in 1:5
+@gif for t in [fill(1, 20)..., [[j for i in 1:2] for j in 1:40]...] |> x->vcat(x...) |> reverse
+
     global x, x_start = p_sample(model, x, [t])
 
-    mat_scatter(x_start, lims=(-5, 5), legend=false)
+    p1 = mat_scatter(x_start, lims=(-4, 4), legend=false, title ="X₀")
+    p2 = mat_scatter(x, lims=(-4,4), legend=false, title="Xₜ")
 
-    #end
+    plot(p1, p2)
+
+end
+
+@gif for t in [fill(1, 20)..., [[j for i in 1:2] for j in 1:40]...] |> x->vcat(x...) |> reverse
+
+    global x, x_start = p_sample(model, x, [t])
+
+    p1 = mat_scatter(X[:, 1:1000], lims=(-4, 4), legend=false, title ="Original")
+    p2 = mat_scatter(x, lims=(-4,4), legend=false, title="Xₜ")
+
+    plot(p1, p2)
+
 end
