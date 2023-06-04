@@ -3,5 +3,5 @@ This is an attempt to explore and reproduce a minimal example of Lior Sinai's br
 
 
 ![](./images/spiral.gif)
-![](./image/heart.gif)
-![](./images/denoise_face)
+![](./images/heart.gif)
+![](./images/denoise_face.gif)
